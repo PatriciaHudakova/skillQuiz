@@ -4,8 +4,8 @@ package rating
 
 import "database/sql"
 
-// Rating is a rating interface
-type Rating interface {
+// IRating is a rating interface
+type IRating interface {
 	PrintRatings(db *sql.DB, answers []string)
 	CalculateImmediateRating(answers []string) string
 	CalculateAverageRating(db *sql.DB, currentRating string) (string, error)

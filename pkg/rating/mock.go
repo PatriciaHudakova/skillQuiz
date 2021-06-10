@@ -11,7 +11,7 @@ import (
 	gomock "github.com/golang/mock/gomock"
 )
 
-// MockRating is a mock of Rating interface.
+// MockRating is a mock of IRating interface.
 type MockRating struct {
 	ctrl     *gomock.Controller
 	recorder *MockRatingMockRecorder

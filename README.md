@@ -55,3 +55,4 @@ the program would display something like "You have a skill only %x of people hav
 3) Optionally one could display overall average per skill for all registered skills
 4) Expanded relational database with a user table related to the skill table
 5) In line with multi-user support, authentication would also be required, possibly using oAuth0
+6) Build on resilience by considering corner case scenarios: more than one average in table? how so? how can we prevent it?

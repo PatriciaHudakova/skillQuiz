@@ -3,50 +3,52 @@ package rating
 import (
 	"database/sql"
 	"fmt"
+	"skillQuiz/pkg/db"
 	"testing"
 
 	"github.com/golang/mock/gomock"
 	_ "github.com/mattn/go-sqlite3"
 )
 
-var testDB *sql.DB
+var testConn *sql.DB
 
 const (
-	driverName = "sqlite3"
+	driverName     = "sqlite3"
 	dataSourceName = "identifier.sqlite"
 )
 
 func setup(t *testing.T) {
-	testDB, _ = sql.Open(driverName, dataSourceName)
-	query, err := testDB.Prepare("DROP TABLE averages;")
+	testConn, _ = sql.Open(driverName, dataSourceName)
+	query, err := testConn.Prepare("DROP TABLE averages;")
 	query.Exec()
-	query2, err := testDB.Prepare("CREATE TABLE averages (uuid INTEGER, overallAverage INTEGER);")
+	query2, err := testConn.Prepare("CREATE TABLE averages (uuid INTEGER, overallAverage INTEGER);")
 	_, err = query2.Exec()
 	if err != nil {
 		fmt.Println(err)
 	}
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
 }
 
 func teardown() {
-	_ = testDB.Close()
+	_ = testConn.Close()
 }
 
 func TestPrintRatings(t *testing.T) { //TODO: fix go mocks
 	setup(t)
 
+	//database := &db.Database{Conn: testConn}
+
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 
 	mockRating := NewMockRating(mockCtrl)
+	mockDatabase := db.NewMockIDatabase(mockCtrl)
 
 	testData := []string{"yes", "no", "no", "yes", "no"}
 
 	mockRating.EXPECT().CalculateImmediateRating(gomock.Eq(testData)).Return("40")
-	mockRating.EXPECT().CalculateAverageRating(testDB, "40")
+	mockRating.EXPECT().CalculateAverageRating(mockDatabase, "40")
 
-	PrintRatings(testDB, testData)
+	PrintRatings(mockDatabase, testData)
 
 	teardown()
 }

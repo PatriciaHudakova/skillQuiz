@@ -13,7 +13,7 @@ const (
 )
 
 type Database struct {
-	conn *sql.DB
+	Conn *sql.DB
 }
 
 // InitDB initialises and creates a connection to our database
@@ -33,12 +33,12 @@ func InitDB() (*Database, error) {
 	}
 	log.Println("Ready to accept connections!")
 
-	return &Database{conn: db}, nil
+	return &Database{Conn: db}, nil
 }
 
 // GetAllRows retrieves all rows from the averages table
 func (db *Database) GetAllRows() (*sql.Rows, error) {
-	numberOfRows, err := db.conn.Query("SELECT * FROM averages;")
+	numberOfRows, err := db.Conn.Query("SELECT * FROM averages;")
 	if err != nil {
 		return nil, err
 	}
@@ -48,7 +48,7 @@ func (db *Database) GetAllRows() (*sql.Rows, error) {
 
 // MakeCurrentRatingTheAverage makes the current run's rating the new overall average
 func (db *Database) MakeCurrentRatingTheAverage(currentRating string) error {
-	stmt, err := db.conn.Prepare("INSERT INTO averages(uuid, overallAverage) values(?,?);")
+	stmt, err := db.Conn.Prepare("INSERT INTO averages(uuid, overallAverage) values(?,?);")
 	if err != nil {
 		return err
 	}
@@ -65,7 +65,7 @@ func (db *Database) MakeCurrentRatingTheAverage(currentRating string) error {
 func (db *Database) GetOverallAverageFromDB() (int, error) {
 	var average int
 
-	rows, err := db.conn.Query("SELECT overallAverage FROM averages;")
+	rows, err := db.Conn.Query("SELECT overallAverage FROM averages;")
 	if err != nil {
 		log.Fatal(err)
 		return 0, err
@@ -85,7 +85,7 @@ func (db *Database) GetOverallAverageFromDB() (int, error) {
 // UpdateAverage updates the table with new average
 func (db *Database) UpdateAverage(newAverage int) error {
 	// Replace the old average with new average
-	stmt, err := db.conn.Prepare("UPDATE averages SET overallAverage=? where uuid=?")
+	stmt, err := db.Conn.Prepare("UPDATE averages SET overallAverage=? where uuid=?")
 	if err != nil {
 		return err
 	}
