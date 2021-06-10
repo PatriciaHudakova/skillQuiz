@@ -8,11 +8,16 @@ import (
 )
 
 const (
-	driverName = "sqlite3"
+	driverName     = "sqlite3"
 	dataSourceName = "identifier.sqlite"
 )
 
-func InitDB() (*sql.DB, error) {
+type Database struct {
+	conn *sql.DB
+}
+
+// InitDB initialises and creates a connection to our database
+func InitDB() (*Database, error) {
 	// Initialise the database
 	db, err := sql.Open(driverName, dataSourceName)
 	if err != nil {
@@ -28,5 +33,66 @@ func InitDB() (*sql.DB, error) {
 	}
 	log.Println("Ready to accept connections!")
 
-	return db, nil
+	return &Database{conn: db}, nil
+}
+
+// GetAllRows retrieves all rows from the averages table
+func (db *Database) GetAllRows() (*sql.Rows, error) {
+	numberOfRows, err := db.conn.Query("SELECT * FROM averages;")
+	if err != nil {
+		return nil, err
+	}
+
+	return numberOfRows, nil
+}
+
+// MakeCurrentRatingTheAverage makes the current run's rating the new overall average
+func (db *Database) MakeCurrentRatingTheAverage(currentRating string) error {
+	stmt, err := db.conn.Prepare("INSERT INTO averages(uuid, overallAverage) values(?,?);")
+	if err != nil {
+		return err
+	}
+
+	_, err = stmt.Exec(1, currentRating)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// GetOverallAverageFromDB retrieves the stored overall average from db
+func (db *Database) GetOverallAverageFromDB() (int, error) {
+	var average int
+
+	rows, err := db.conn.Query("SELECT overallAverage FROM averages;")
+	if err != nil {
+		log.Fatal(err)
+		return 0, err
+	}
+
+	for rows.Next() {
+		if err = rows.Scan(&average); err != nil {
+			log.Fatal(err)
+			return 0, err
+		}
+	}
+	rows.Close()
+
+	return average, nil
+}
+
+// UpdateAverage updates the table with new average
+func (db *Database) UpdateAverage(newAverage int) error {
+	// Replace the old average with new average
+	stmt, err := db.conn.Prepare("UPDATE averages SET overallAverage=? where uuid=?")
+	if err != nil {
+		return err
+	}
+	_, err = stmt.Exec(newAverage, 1)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

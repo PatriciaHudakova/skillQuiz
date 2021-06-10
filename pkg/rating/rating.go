@@ -1,15 +1,15 @@
 package rating
 
 import (
-	"database/sql"
 	"fmt"
 	"log"
+	"skillQuiz/pkg/db"
 	"strconv"
 	"strings"
 )
 
 // PrintRatings is a wrapper function to calculate and print current & average ratings
-func PrintRatings(db *sql.DB, answers []string) {
+func PrintRatings(db *db.Database, answers []string) {
 	// Based on user input, calculate the current rating
 	currentRating := CalculateImmediateRating(answers)
 	fmt.Printf("Your rating is: %s/100\n", currentRating)
@@ -41,66 +41,50 @@ func CalculateImmediateRating(answers []string) string {
 	}
 
 	// Calculate a percentage like rating
-	rating := 100 * (count/numberOfAnswers)
+	rating := 100 * (count / numberOfAnswers)
 
 	// Round the rating to 0 decimal places for consistency
 	return fmt.Sprintf("%.0f", rating)
 }
 
 // CalculateAverageRating calculates the average rating of all runs using the existing average in the db
-func CalculateAverageRating(db *sql.DB, currentRating string) (string, error) { //TODO: create helper functions to refactor this method & test
+func CalculateAverageRating(db *db.Database, currentRating string) (string, error) {
 	var average int
 
-	// Check if table is empty
-	numberOfRows, err := db.Query("SELECT * FROM averages;")
+	// Retrieve all rows from the averages table
+	numberOfRows, err := db.GetAllRows()
 	if err != nil {
 		return "", err
 	}
 
-	// If table is empty, current rating becomes the average
+	// If there are no entries, current rating becomes the average
 	if !numberOfRows.Next() {
-		stmt, err := db.Prepare("INSERT INTO averages(uuid, overallAverage) values(?,?);")
-		if err != nil {
-			return "", err
+		if err := db.MakeCurrentRatingTheAverage(currentRating); err != nil {
+			return "", fmt.Errorf("unable to persist current average: %v", err)
 		}
-
-		_, err = stmt.Exec(1, currentRating)
-		if err != nil {
-			return "", err
-		}
-
+		numberOfRows.Close()
 		return currentRating, nil
 	}
 	numberOfRows.Close()
 
 	// If not, retrieve rating and calculate new rating, then add it back into the table as the new average and return
-	rows, err := db.Query("SELECT overallAverage FROM averages;")
+	average, err = db.GetOverallAverageFromDB()
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("unable to retrieve average: %v", err)
 	}
-
-	for rows.Next() {
-		if err = rows.Scan(&average); err != nil {
-			return "", err
-		}
-	}
-	rows.Close()
 
 	// Calculate the new average
 	current, err := strconv.Atoi(currentRating)
 	if err != nil {
 		return "", err
 	}
+
+	// Convert to float as using an integer would result in 0
 	newAverage := 100 * ((float64(average) + float64(current)) / 200)
 
 	// Replace the old average with new average
-	stmt, err := db.Prepare("UPDATE averages SET overallAverage=? where uuid=?") //TODO locked db
-	if err != nil {
-		return "", err
-	}
-	_, err = stmt.Exec(newAverage, 1)
-	if err != nil {
-		return "", err
+	if err = db.UpdateAverage(int(newAverage)); err != nil {
+		return "", fmt.Errorf("unable to update average: %v", err)
 	}
 
 	return fmt.Sprintf("%.0f", newAverage), nil
