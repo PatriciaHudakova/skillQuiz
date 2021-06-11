@@ -63,41 +63,61 @@ func TestCalculateImmediateRating(t *testing.T) {
 }
 
 func TestCalculateAverageRating(t *testing.T) {
-	// Specify desired responses
-	mockDB := db.NewMockClient()
-	mockDB = &db.MockClient{GetAllRowsFn: func() (*sql.Rows, error) {
-		return &sql.Rows{}, nil
-	},
-		IsEmptyFn: func(rows *sql.Rows) bool {
-			return false
+	type args struct {
+		db            db.IDatabase
+		currentRating string
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    string
+		wantErr bool
+	}{
+		{
+			name: "should use current run's average as new",
+			args: args{
+				db: &db.MockClient{GetAllRowsFn: func() (*sql.Rows, error) {
+					return &sql.Rows{}, nil
+				},
+					IsEmptyFn: func(rows *sql.Rows) bool {
+						return true
+					},
+					MakeCurrentRatingTheAverageFn: func(currentRating string) error {
+						return nil
+					},
+				},
+				currentRating: "50",
+			},
+			wantErr: false,
 		},
-		GetOverallAverageFromDBFn: func() (int, error) {
-			return 40, nil
-		},
-		UpdateAverageFn: func(newAverage int) error {
-			return nil
-		}}
-
-	average, err := CalculateAverageRating(mockDB, "50")
-
-	assert.Nil(t, err)
-	assert.NotNil(t, average)
-}
-
-func TestNewCalculateAverageRating(t *testing.T) {
-	mockDB := db.NewMockClient()
-	mockDB = &db.MockClient{GetAllRowsFn: func() (*sql.Rows, error) {
-		return &sql.Rows{}, nil
-	},
-		IsEmptyFn: func(rows *sql.Rows) bool {
-			return true
-		},
-		MakeCurrentRatingTheAverageFn: func(currentRating string) error {
-			return nil
+		{
+			name: "should recognise existing average and use it to persist new",
+			args: args{
+				db: &db.MockClient{GetAllRowsFn: func() (*sql.Rows, error) {
+					return &sql.Rows{}, nil
+				},
+					IsEmptyFn: func(rows *sql.Rows) bool {
+						return false
+					},
+					GetOverallAverageFromDBFn: func() (int, error) {
+						return 40, nil
+					},
+					UpdateAverageFn: func(newAverage int) error {
+						return nil
+					}},
+				currentRating: "50",
+			},
+			wantErr: false,
 		},
 	}
-	average, err := CalculateAverageRating(mockDB, "50")
-
-	assert.Nil(t, err)
-	assert.NotNil(t, average)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := CalculateAverageRating(tt.args.db, tt.args.currentRating)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("CalculateAverageRating() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			assert.NotNil(t, got)
+		})
+	}
 }
