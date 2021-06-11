@@ -11,12 +11,8 @@ import (
 func setup(testConn *sql.DB) {
 	// Drop averages table if existing in case of leftover resources from failed tests
 	query, err := testConn.Prepare("DROP TABLE averages;")
-	if err != nil {
-		log.Println(err)
-	}
-	_, err = query.Exec()
-	if err != nil {
-		log.Println(err)
+	if err == nil {
+		_, _ = query.Exec()
 	}
 
 	// Create the new averages table
