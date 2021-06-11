@@ -29,15 +29,13 @@ func PrintRatings(currentRunFunc CurrentRun, averageRunFunc AverageRun, db db.ID
 // CalculateImmediateRating calculates the rating of the current run
 func CalculateImmediateRating(answers []pkg.Question) string {
 	count := 0
-	fmt.Println(answers)
 
-	// Iterate through the responses and assign a point for each yes
+	// Iterate through the responses and accumulate total points for the run
 	for _, question := range answers {
-		// As per the task requirements, we only care about yes's, and not no's or invalid input for now
 		count = count + question.Value
 	}
 
-	// Calculate a percentage like rating
+	// Calculate a percentage like rating (using integers would result in 0)
 	rating := 100 * (float64(count) / float64(len(answers)))
 
 	// Round the rating to 0 decimal places for consistency

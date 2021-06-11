@@ -44,15 +44,18 @@ func CliComponent() []Question {
 	// Initialise a new scanner that can scan a line from the console and hold the input as a variable
 	scanner := bufio.NewScanner(os.Stdin)
 	questions := createQuestions()
-	populated := []Question{}
+	var populatedQs []Question
 
 	fmt.Println("Skill Questionnaire")
-
 	fmt.Println("-------------------")
+	// Iterate through questions, check the response and assign a score
 	for _, question := range questions {
+		// Print question and record response
 		fmt.Println(question.Text)
 		scanner.Scan()
 		answer := scanner.Text()
+
+		// Populate the remainder of the struct with correct values
 		question.Answer = answer
 		switch answer {
 		case "yes":
@@ -62,10 +65,11 @@ func CliComponent() []Question {
 		default:
 			question.Value = 0
 		}
-		populated = append(populated, question)
+
+		// Populate the the questions array with newly populated structs
+		populatedQs = append(populatedQs, question)
 	}
 	fmt.Println("-------------------")
 
-	fmt.Println(populated)
-	return populated
+	return populatedQs
 }
