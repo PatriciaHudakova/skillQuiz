@@ -2,6 +2,7 @@ package rating
 
 import (
 	"database/sql"
+	"skillQuiz/pkg"
 	"skillQuiz/pkg/db"
 	"testing"
 
@@ -9,9 +10,59 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func createQuestionSet() []pkg.Question {
+	return []pkg.Question{{
+		Text:   "test Question 1",
+		Answer: "yes",
+		Value:  1,
+	}, {
+		Text:   "test Question 2",
+		Answer: "no",
+		Value:  0,
+	}, {
+		Text:   "test Question 3",
+		Answer: "yes",
+		Value:  1,
+	}, {
+		Text:   "test Question 4",
+		Answer: "yes",
+		Value:  1,
+	}, {
+		Text:   "test Question 5",
+		Answer: "no",
+		Value:  0,
+	},
+	}
+}
+
+func createQuestionSetInvalid() []pkg.Question {
+	return []pkg.Question{{
+		Text:   "test Question 1",
+		Answer: "invalid response",
+		Value:  0,
+	}, {
+		Text:   "test Question 2",
+		Answer: "random string",
+		Value:  0,
+	}, {
+		Text:   "test Question 3",
+		Answer: "no",
+		Value:  0,
+	}, {
+		Text:   "test Question 4",
+		Answer: "yes",
+		Value:  1,
+	}, {
+		Text:   "test Question 5",
+		Answer: "another random string",
+		Value:  0,
+	},
+	}
+}
+
 func TestPrintRatings(t *testing.T) {
 	DB := db.NewMockClient()
-	testData := []string{"yes", "no", "no", "no", "yes"}
+	testData := createQuestionSet()
 
 	err := PrintRatings(mockCalculateImmediateRating, mockCalculateAverageRating, DB, testData)
 	// Assert no error during function call
@@ -25,7 +76,7 @@ func TestPrintRatings(t *testing.T) {
 
 func TestCalculateImmediateRating(t *testing.T) {
 	type args struct {
-		params []string
+		params []pkg.Question
 	}
 	tests := []struct {
 		name string
@@ -34,22 +85,17 @@ func TestCalculateImmediateRating(t *testing.T) {
 	}{
 		{
 			name: "should correctly calculate rating using expected input",
-			args: args{params: []string{"yes", "yes", "no", "no", "yes"}},
+			args: args{params: createQuestionSet()},
 			want: "60",
 		},
 		{
 			name: "should correctly calculate rating using unexpected input",
-			args: args{params: []string{"yes", "yes", "", "7927", "';]"}},
-			want: "40",
-		},
-		{
-			name: "correct rating should not be limited to 5 parameters",
-			args: args{params: []string{"no", "no", "no", "no", "no", "yes", "yes"}},
-			want: "29",
+			args: args{params: createQuestionSetInvalid()},
+			want: "20",
 		},
 		{
 			name: "no parameters shouldn't throw NaN as an answer",
-			args: args{params: []string{}},
+			args: args{params: []pkg.Question{}},
 			want: "0",
 		},
 	}

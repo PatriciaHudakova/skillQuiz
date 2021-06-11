@@ -2,10 +2,11 @@ package rating
 
 import (
 	"errors"
+	"skillQuiz/pkg"
 	"skillQuiz/pkg/db"
 )
 
-func mockCalculateImmediateRating(answers []string) string {
+func mockCalculateImmediateRating(answers []pkg.Question) string {
 	return "40"
 }
 
