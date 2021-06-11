@@ -3,7 +3,7 @@
 - [High Level Overview](#overview)
 - [Project Structure](#structure)
 - [Running the Program](#execution)
-- [Future Improvements](#future improvements)
+- [Future Improvements](#futureImprovements)
 
 ### High Level Overview <a name="overview"></a>
 
@@ -58,7 +58,7 @@ To execute all unit tests:
 go test ./...
 ```
 
-### Future Improvements <a name="future improvements"></a>
+### Future Improvements <a name="futureImprovements"></a>
 
 Possible ways to build up on existing implementation are:
 1) Add a Dockerfile for a more seamless setup
