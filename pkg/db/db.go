@@ -9,7 +9,7 @@ import (
 
 const (
 	DriverName     = "sqlite3"
-	DataSourceName = "identifier.sqlite"
+	DataSourceName = "perfectward.db"
 )
 
 type Database struct {

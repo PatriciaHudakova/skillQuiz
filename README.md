@@ -45,9 +45,8 @@ Pkg level directory contains:
 To run the program:
 ```
 1) install sql lite if already not installed (skip if on iOS: as they have this preinstalled by default)
-2) in pkg > db > db.go, check the driver name and data source match your local setup. For simplicity, I've used the default values
-3) start the databse and execute the script in init.sql located in the root directory to create the required table
-4) from the root directory, execute go run main.go
+2) run init.sh located in the root directory
+3) from the root directory, execute go run main.go
 ```
 
 To execute all unit tests:

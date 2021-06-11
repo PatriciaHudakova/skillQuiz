@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"strings"
 )
 
 type Question struct {
@@ -57,10 +58,14 @@ func CliComponent() []Question {
 
 		// Populate the remainder of the struct with correct values
 		question.Answer = answer
-		switch answer {
+		switch strings.ToLower(answer) {
 		case "yes":
 			question.Value = 1
+		case "y":
+			question.Value = 1
 		case "no":
+			question.Value = 0
+		case "n":
 			question.Value = 0
 		default:
 			question.Value = 0
