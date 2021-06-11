@@ -27,10 +27,9 @@ SQL Table has the following columns:
 ### Project Structure <a name="structure"></a>
 
 Root directory contains the following files:
-- **Dockerfile:** docker config file
 - **go.mod**: configuration file for go dependencies
 - **go.sum**: companion file of _go.mod_; it stores the checksums of each external dependency
-- **main.go:** the entry point of the program  
+- **init.sh:** a script file to create database resources as needed 
 - **main.go:** the entry point of the program
 - **README.md:** this documentation file
 
