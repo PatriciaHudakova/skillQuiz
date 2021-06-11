@@ -10,14 +10,6 @@ import (
 type CurrentRun func(answers []string) string
 type AverageRun func(db db.IDatabase, currentRating string) (string, error)
 
-type Rating struct {
-	db *db.Database
-}
-
-func NewRating(db *db.Database) *Rating {
-	return &Rating{db: db}
-}
-
 // PrintRatings is a wrapper function to calculate and print current & average ratings
 func PrintRatings(currentRunFunc CurrentRun, averageRunFunc AverageRun, db db.IDatabase, answers []string) error {
 	// Based on user input, calculate the current rating
