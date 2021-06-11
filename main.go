@@ -12,6 +12,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	defer sqlDB.Conn.Close()
 
 	// Print and record answers to pre-defined questions
 	answers := pkg.CliComponent()

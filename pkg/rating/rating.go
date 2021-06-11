@@ -38,7 +38,6 @@ func CalculateImmediateRating(answers []pkg.Question) string {
 	// Iterate through the responses and accumulate total points for the run
 	for _, question := range answers {
 		count = count + question.Value
-		fmt.Println(count)
 	}
 
 	// Calculate a percentage like rating (using integers would result in 0)
