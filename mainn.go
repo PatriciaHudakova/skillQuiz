@@ -15,5 +15,7 @@ func main() {
 
 	// Ask questions, record answer and print ratings
 	answers := pkg.AskQuestions()
-	rating.PrintRatings(sqlDB, answers)
+	if err := rating.PrintRatings(rating.CalculateImmediateRating, rating.CalculateAverageRating, sqlDB, answers); err != nil {
+		panic(err)
+	}
 }

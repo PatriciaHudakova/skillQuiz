@@ -2,24 +2,28 @@ package rating
 
 import (
 	"fmt"
-	"log"
 	"skillQuiz/pkg/db"
 	"strconv"
 	"strings"
 )
 
+type CurrentRun func(answers []string) string
+type AverageRun func(db *db.Database, currentRating string) (string, error)
+
 // PrintRatings is a wrapper function to calculate and print current & average ratings
-func PrintRatings(db *db.Database, answers []string) {
+func PrintRatings(currentRunFunc CurrentRun, averageRunFunc AverageRun, db *db.Database, answers []string) error {
 	// Based on user input, calculate the current rating
-	currentRating := CalculateImmediateRating(answers)
+	currentRating := currentRunFunc(answers)
 	fmt.Printf("Your rating is: %s/100\n", currentRating)
 
 	// Using the persisted data from the database and new user input, print the new average
-	averageRating, err := CalculateAverageRating(db, currentRating)
+	averageRating, err := averageRunFunc(db, currentRating)
 	if err != nil {
-		log.Fatalf("Something went wrong calculating your average score: %v", err)
+		return fmt.Errorf("something went wrong calculating your average score: %v", err)
 	}
 	fmt.Printf("The average rating is: %s/100", averageRating)
+
+	return nil
 }
 
 // CalculateImmediateRating calculates the rating of the current run

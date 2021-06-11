@@ -64,7 +64,7 @@ func TestInitDB(t *testing.T) {
 }
 
 func TestDatabase_GetAllRows(t *testing.T) {
-	testConn, _ := sql.Open(driverName, dataSourceName)
+	testConn, _ := sql.Open(DriverName, DataSourceName)
 	defer testConn.Close()
 
 	DB := Database{Conn: testConn}
@@ -104,7 +104,7 @@ func TestDatabase_GetAllRows(t *testing.T) {
 }
 
 func TestDatabase_GetOverallAverageFromDB(t *testing.T) {
-	testConn, _ := sql.Open(driverName, dataSourceName)
+	testConn, _ := sql.Open(DriverName, DataSourceName)
 	defer testConn.Close()
 
 	DB := Database{Conn: testConn}
@@ -132,7 +132,7 @@ func TestDatabase_GetOverallAverageFromDB(t *testing.T) {
 }
 
 func TestDatabase_MakeCurrentRatingTheAverage(t *testing.T) {
-	testConn, _ := sql.Open(driverName, dataSourceName)
+	testConn, _ := sql.Open(DriverName, DataSourceName)
 	defer testConn.Close()
 
 	DB := Database{Conn: testConn}
@@ -153,7 +153,7 @@ func TestDatabase_MakeCurrentRatingTheAverage(t *testing.T) {
 }
 
 func TestDatabase_UpdateAverage(t *testing.T) {
-	testConn, _ := sql.Open(driverName, dataSourceName)
+	testConn, _ := sql.Open(DriverName, DataSourceName)
 	defer testConn.Close()
 
 	DB := Database{Conn: testConn}

@@ -1,56 +1,25 @@
 package rating
 
 import (
-	"database/sql"
-	"fmt"
 	"skillQuiz/pkg/db"
 	"testing"
 
-	"github.com/golang/mock/gomock"
 	_ "github.com/mattn/go-sqlite3"
+	"github.com/stretchr/testify/assert"
 )
 
-var testConn *sql.DB
+func TestPrintRatings(t *testing.T) {
+	DB := &db.Database{}
+	testData := []string{"yes", "no", "no", "no", "yes"}
 
-const (
-	driverName     = "sqlite3"
-	dataSourceName = "identifier.sqlite"
-)
+	err := PrintRatings(mockCalculateImmediateRating, mockCalculateAverageRating, DB, testData)
+	// Assert no error during function call
+	assert.Nil(t, err)
 
-func setup(t *testing.T) {
-	testConn, _ = sql.Open(driverName, dataSourceName)
-	query, err := testConn.Prepare("DROP TABLE averages;")
-	query.Exec()
-	query2, err := testConn.Prepare("CREATE TABLE averages (uuid INTEGER, overallAverage INTEGER);")
-	_, err = query2.Exec()
-	if err != nil {
-		fmt.Println(err)
-	}
-}
-
-func teardown() {
-	_ = testConn.Close()
-}
-
-func TestPrintRatings(t *testing.T) { //TODO: fix go mocks
-	setup(t)
-
-	//database := &db.Database{Conn: testConn}
-
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
-
-	mockRating := NewMockRating(mockCtrl)
-	mockDatabase := db.NewMockIDatabase(mockCtrl)
-
-	testData := []string{"yes", "no", "no", "yes", "no"}
-
-	mockRating.EXPECT().CalculateImmediateRating(gomock.Eq(testData)).Return("40")
-	mockRating.EXPECT().CalculateAverageRating(mockDatabase, "40")
-
-	PrintRatings(mockDatabase, testData)
-
-	teardown()
+	err = PrintRatings(mockCalculateImmediateRating, mockCalculateAverageRatingErr, DB, testData)
+	// Assert error during function call is handled correctly
+	assert.NotNil(t, err)
+	assert.Equal(t, "something went wrong calculating your average score: test error", err.Error())
 }
 
 func TestCalculateImmediateRating(t *testing.T) {
@@ -90,4 +59,8 @@ func TestCalculateImmediateRating(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestCalculateAverageRating(t *testing.T) {
+
 }

@@ -8,8 +8,8 @@ import (
 )
 
 const (
-	driverName     = "sqlite3"
-	dataSourceName = "identifier.sqlite"
+	DriverName     = "sqlite3"
+	DataSourceName = "identifier.sqlite"
 )
 
 type Database struct {
@@ -19,7 +19,7 @@ type Database struct {
 // InitDB initialises and creates a connection to our database
 func InitDB() (*Database, error) {
 	// Initialise the database
-	db, err := sql.Open(driverName, dataSourceName)
+	db, err := sql.Open(DriverName, DataSourceName)
 	if err != nil {
 		log.Fatalf("Unable to connect to the database: %v", err)
 		return nil, err
