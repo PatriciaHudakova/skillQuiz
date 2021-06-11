@@ -1,4 +1,4 @@
-# skillQuiz
+# questionnaire-runner
 
 - [High Level Overview](#overview)
 - [Project Structure](#structure)
@@ -7,7 +7,7 @@
 
 ### High Level Overview <a name="overview"></a>
 
-skillQuiz is a simple questionnaire runner developed with Go and SQL Lite and it works as follows:
+This is a simple questionnaire runner developed with Go and SQL Lite and it works as follows:
 - running the program will prompt you with a series of questions
 - please answer with a "yes" or "no" as appropriate. Acceptable responses also are "y", "n", "YES", "No"...etc.
 - when the questionnaire is over, your current run and average rating of all subsequent runs is calculated and displayed
