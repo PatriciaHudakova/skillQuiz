@@ -9,15 +9,15 @@
 
 skillQuiz is a simple questionnaire runner developed with Go and SQL Lite and it works as follows:
 - running the program will prompt you with a series of questions
-- please answer with a "yes" or "no" as appropriate
+- please answer with a "yes" or "no" as appropriate. Acceptable responses also are "y", "n", "YES", "No"...etc.
 - when the questionnaire is over, your current run and average rating of all subsequent runs is calculated and displayed
 
 The Scores are calculated as described below:
-- **Current Run:** a counter is initialised and incremented each time a "yes" is recorded for a question, then the average of the current
+- **Current Run:** a counter is initialised and incremented each time a "yes" (or equivalent) is recorded for a question, then the average of the current
     run becomes 100 * (counter/n.o. of questions)
 - **Overall Average:** firstly, the database is checked if it contains an average entry. If so, the value is retrieved and new average is 
     calculated with the current run average value in mind. This new value becomes the new average and replaces the old value in the database. 
-    If not, the current run average becomes the overall average and is inserted into the table
+    If absent, the current run average becomes the overall average and is inserted into the table
   
 SQL Table has the following columns:
 
