@@ -8,10 +8,18 @@ import (
 )
 
 type CurrentRun func(answers []string) string
-type AverageRun func(db *db.Database, currentRating string) (string, error)
+type AverageRun func(db db.IDatabase, currentRating string) (string, error)
+
+type Rating struct {
+	db *db.Database
+}
+
+func NewRating(db *db.Database) *Rating {
+	return &Rating{db: db}
+}
 
 // PrintRatings is a wrapper function to calculate and print current & average ratings
-func PrintRatings(currentRunFunc CurrentRun, averageRunFunc AverageRun, db *db.Database, answers []string) error {
+func PrintRatings(currentRunFunc CurrentRun, averageRunFunc AverageRun, db db.IDatabase, answers []string) error {
 	// Based on user input, calculate the current rating
 	currentRating := currentRunFunc(answers)
 	fmt.Printf("Your rating is: %s/100\n", currentRating)
@@ -52,24 +60,22 @@ func CalculateImmediateRating(answers []string) string {
 }
 
 // CalculateAverageRating calculates the average rating of all runs using the existing average in the db
-func CalculateAverageRating(db *db.Database, currentRating string) (string, error) {
+func CalculateAverageRating(db db.IDatabase, currentRating string) (string, error) {
 	var average int
 
 	// Retrieve all rows from the averages table
-	numberOfRows, err := db.GetAllRows()
+	rows, err := db.GetAllRows()
 	if err != nil {
 		return "", err
 	}
 
 	// If there are no entries, current rating becomes the average
-	if !numberOfRows.Next() {
+	if db.IsEmpty(rows) {
 		if err := db.MakeCurrentRatingTheAverage(currentRating); err != nil {
 			return "", fmt.Errorf("unable to persist current average: %v", err)
 		}
-		numberOfRows.Close()
 		return currentRating, nil
 	}
-	numberOfRows.Close()
 
 	// If not, retrieve rating and calculate new rating, then add it back into the table as the new average and return
 	average, err = db.GetOverallAverageFromDB()

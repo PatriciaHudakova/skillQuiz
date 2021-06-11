@@ -21,7 +21,7 @@ The Scores are calculated as described below:
   
 SQL Table has the following columns:
 
-- **uuid:** it's a good practice to have a unique identifier for each entry, INTEGER, PRIMARY KEY, AUTOINCREMENT
+- **uuid:** it's a good practice to have a unique identifier for each entry, INTEGER, PRIMARY KEY
 - **overallAverage:** holds the cumulative average, INTEGER, NOT NULL
 
 ### Project Structure <a name="structure"></a>
@@ -42,9 +42,15 @@ Pkg level directory contains:
 
 ### Running the Program <a name="execution"></a>
 
-1) go run main.go
+To run the program:
+```
 
-<TODO: needs modifying>
+```
+
+To execute all unit tests:
+```
+go test ./...
+```
 
 ### Future Improvements <a name="future improvements"></a>
 

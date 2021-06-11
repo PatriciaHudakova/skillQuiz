@@ -96,3 +96,13 @@ func (db *Database) UpdateAverage(newAverage int) error {
 
 	return nil
 }
+
+// IsEmpty checks if there are any entries in the table
+func (db *Database) IsEmpty(rows *sql.Rows) bool {
+	if !rows.Next() {
+		return true
+	}
+	rows.Close()
+
+	return false
+}

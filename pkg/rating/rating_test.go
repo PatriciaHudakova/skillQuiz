@@ -1,6 +1,7 @@
 package rating
 
 import (
+	"database/sql"
 	"skillQuiz/pkg/db"
 	"testing"
 
@@ -9,7 +10,7 @@ import (
 )
 
 func TestPrintRatings(t *testing.T) {
-	DB := &db.Database{}
+	DB := db.NewMockClient()
 	testData := []string{"yes", "no", "no", "no", "yes"}
 
 	err := PrintRatings(mockCalculateImmediateRating, mockCalculateAverageRating, DB, testData)
@@ -62,5 +63,41 @@ func TestCalculateImmediateRating(t *testing.T) {
 }
 
 func TestCalculateAverageRating(t *testing.T) {
+	// Specify desired responses
+	mockDB := db.NewMockClient()
+	mockDB = &db.MockClient{GetAllRowsFn: func() (*sql.Rows, error) {
+		return &sql.Rows{}, nil
+	},
+		IsEmptyFn: func(rows *sql.Rows) bool {
+			return true
+		},
+		GetOverallAverageFromDBFn: func() (int, error) {
+			return 40, nil
+		},
+		UpdateAverageFn: func(newAverage int) error {
+			return nil
+		}}
 
+	average, err := CalculateAverageRating(mockDB, "50")
+
+	assert.Nil(t, err)
+	assert.NotNil(t, average)
+}
+
+func TestNewCalculateAverageRating(t *testing.T) {
+	mockDB := db.NewMockClient()
+	mockDB = &db.MockClient{GetAllRowsFn: func() (*sql.Rows, error) {
+		return &sql.Rows{}, nil
+	},
+		IsEmptyFn: func(rows *sql.Rows) bool {
+			return false
+		},
+		MakeCurrentRatingTheAverageFn: func(currentRating string) error {
+			return nil
+		},
+	}
+	average, err := CalculateAverageRating(mockDB, "50")
+
+	assert.Nil(t, err)
+	assert.NotNil(t, average)
 }

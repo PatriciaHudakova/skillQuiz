@@ -8,4 +8,5 @@ type IDatabase interface {
 	MakeCurrentRatingTheAverage(currentRating string) error
 	GetOverallAverageFromDB() (int, error)
 	UpdateAverage(newAverage int) error
+	IsEmpty(rows *sql.Rows) bool
 }
