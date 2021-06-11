@@ -12,7 +12,10 @@ func setup(testConn *sql.DB) {
 	// Drop averages table if existing in case of leftover resources from failed tests
 	query, err := testConn.Prepare("DROP TABLE averages;")
 	if err == nil {
-		_, _ = query.Exec()
+		// Error is thrown if db exists, if not, drop it
+		if _, err = query.Exec(); err != nil {
+			log.Fatal(err)
+		}
 	}
 
 	// Create the new averages table
@@ -28,6 +31,14 @@ func setup(testConn *sql.DB) {
 
 func teardown(testConn *sql.DB) {
 	testConn.Close()
+
+	// Drop averages table at the end of successful test cases
+	query, err := testConn.Prepare("DROP TABLE averages;")
+	if err == nil {
+		if _, err = query.Exec(); err != nil {
+			log.Fatal(err)
+		}
+	}
 }
 
 func TestInitDB(t *testing.T) {

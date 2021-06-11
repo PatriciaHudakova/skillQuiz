@@ -41,6 +41,11 @@ Pkg level directory contains:
 
 ### Running the Program <a name="execution"></a>
 
+Required GO version:
+```
+GO 1.16
+```
+
 To run the program:
 ```
 1) install sql lite if already not installed (skip if on iOS: as they have this preinstalled by default)
@@ -56,10 +61,6 @@ go test ./...
 ### Future Improvements <a name="future improvements"></a>
 
 Possible ways to build up on existing implementation are:
-1) Dynamic creation of questions by the user for a more tailored experience
-2) Multi-user support where the overall average is only displayed for skills the user has responded "yes" to. For instance,
-the program would display something like "You have a skill only %x of people have".
-3) Optionally one could display overall average per skill for all registered skills
-4) Expanded relational database with a user table related to the skill table
-5) In line with multi-user support, authentication would also be required, possibly using oAuth0
-6) Build on resilience by considering corner case scenarios: more than one average in table? how so? how can we prevent it?
+1) Add a Dockerfile for a more seamless setup
+2) Be able to load questions from the DB
+3) Be able to add dependent questions e.g. a parent question can have many child questions
