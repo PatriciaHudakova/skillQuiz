@@ -69,7 +69,7 @@ func TestCalculateAverageRating(t *testing.T) {
 		return &sql.Rows{}, nil
 	},
 		IsEmptyFn: func(rows *sql.Rows) bool {
-			return true
+			return false
 		},
 		GetOverallAverageFromDBFn: func() (int, error) {
 			return 40, nil
@@ -90,7 +90,7 @@ func TestNewCalculateAverageRating(t *testing.T) {
 		return &sql.Rows{}, nil
 	},
 		IsEmptyFn: func(rows *sql.Rows) bool {
-			return false
+			return true
 		},
 		MakeCurrentRatingTheAverageFn: func(currentRating string) error {
 			return nil
