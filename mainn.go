@@ -13,8 +13,8 @@ func main() {
 		panic(err)
 	}
 
-	// Ask questions, record answer and print ratings
-	answers := pkg.AskQuestions()
+	// Print and record answers to pre-defined questions
+	answers := pkg.CliComponent()
 	if err := rating.PrintRatings(rating.CalculateImmediateRating, rating.CalculateAverageRating, sqlDB, answers); err != nil {
 		panic(err)
 	}

@@ -2,16 +2,16 @@ package rating
 
 import (
 	"fmt"
+	"skillQuiz/pkg"
 	"skillQuiz/pkg/db"
 	"strconv"
-	"strings"
 )
 
-type CurrentRun func(answers []string) string
+type CurrentRun func(answers []pkg.Question) string
 type AverageRun func(db db.IDatabase, currentRating string) (string, error)
 
 // PrintRatings is a wrapper function to calculate and print current & average ratings
-func PrintRatings(currentRunFunc CurrentRun, averageRunFunc AverageRun, db db.IDatabase, answers []string) error {
+func PrintRatings(currentRunFunc CurrentRun, averageRunFunc AverageRun, db db.IDatabase, answers []pkg.Question) error {
 	// Based on user input, calculate the current rating
 	currentRating := currentRunFunc(answers)
 	fmt.Printf("Your rating is: %s/100\n", currentRating)
@@ -27,25 +27,18 @@ func PrintRatings(currentRunFunc CurrentRun, averageRunFunc AverageRun, db db.ID
 }
 
 // CalculateImmediateRating calculates the rating of the current run
-func CalculateImmediateRating(answers []string) string {
-	var count float32
-	numberOfAnswers := float32(len(answers))
-
-	// Base case
-	if numberOfAnswers <= 0 {
-		return "0"
-	}
+func CalculateImmediateRating(answers []pkg.Question) string {
+	count := 0
+	fmt.Println(answers)
 
 	// Iterate through the responses and assign a point for each yes
-	for _, param := range answers {
-		// As per the task requirements, we only care about yes's, and not no's or invalid input
-		if strings.EqualFold(param, "yes") {
-			count++
-		}
+	for _, question := range answers {
+		// As per the task requirements, we only care about yes's, and not no's or invalid input for now
+		count = count + question.Value
 	}
 
 	// Calculate a percentage like rating
-	rating := 100 * (count / numberOfAnswers)
+	rating := 100 * (float64(count) / float64(len(answers)))
 
 	// Round the rating to 0 decimal places for consistency
 	return fmt.Sprintf("%.0f", rating)
